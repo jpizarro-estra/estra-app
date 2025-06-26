@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inicio de Sesión</title>
+</head>
+<body>
+  <h2>Bienvenido a ESTRA 🎉</h2>
+  <p>Sesión iniciada como: <span id="usuario"></span></p>
+
+  <script>
+    const user = localStorage.getItem("usuario") || "Invitado";
+    document.getElementById("usuario").textContent = user;
+  </script>
+</body>
+</html>
