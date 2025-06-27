@@ -27,6 +27,7 @@
       margin-bottom: 20px;
       font-weight: 600;
       color: #1a1a1a;
+      text-align: center;
     }
     input {
       width: 100%;
@@ -52,6 +53,7 @@
       margin-top: -10px;
       margin-bottom: 10px;
       display: none;
+      text-align: center;
     }
   </style>
 </head>
@@ -60,38 +62,56 @@
     <h2>Ingreso a ESTRA</h2>
     <input type="text" id="usuario" placeholder="Usuario" />
     <input type="password" id="clave" placeholder="Contraseña" />
-    <div class="error" id="error-msg">Usuario o contraseña incorrectos</div>
+    <div class="error" id="error-msg"></div>
     <button onclick="ingresar()">Ingresar</button>
   </div>
 
   <script>
-  async function ingresar() {
-    const usuario = document.getElementById("usuario").value;
-    const clave = document.getElementById("clave").value;
-    const errorMsg = document.getElementById("error-msg");
+    const URL_API = "https://script.google.com/macros/s/AKfycbziiOPu7FdyEwqNaGSL31A3bVy_yOSC5vrKuBSCTJ0LmHRKUe_Wcffi8f6IFugrIunZ/exec";
 
-    try {
-      const response = await fetch(
-        `https://script.google.com/macros/s/AKfycbziiOPu7FdyEwqNaGSL31A3bVy_yOSC5vrKuBSCTJ0LmHRKUe_Wcffi8f6IFugrIunZ/exec?op=login&usuario=${usuario}&clave=${clave}`
-      );
-
-      const result = await response.json();
-      console.log("Respuesta:", result);
-
-      if (result.status === "ok") {
-        localStorage.setItem("usuario", usuario);
-        window.location.href = "index.html"; // Aquí irá tu app principal
-      } else {
-        errorMsg.textContent = "Usuario o contraseña incorrectos";
-        errorMsg.style.display = "block";
-      }
-    } catch (error) {
-      console.error("Error al ingresar:", error);
-      errorMsg.textContent = "Error de conexión o respuesta inválida";
+    function mostrarError(msg) {
+      const errorMsg = document.getElementById("error-msg");
+      errorMsg.textContent = msg;
       errorMsg.style.display = "block";
     }
-  }
-</script>
+
+    async function ingresar() {
+      const usuario = document.getElementById("usuario").value.trim();
+      const clave = document.getElementById("clave").value;
+      const errorMsg = document.getElementById("error-msg");
+      errorMsg.style.display = "none";
+
+      if (!usuario || !clave) {
+        mostrarError("Por favor, completa ambos campos.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${URL_API}?op=login&usuario=${usuario}&clave=${clave}`);
+        const text = await response.text();
+        console.log("Respuesta cruda:", text);
+
+        let result = {};
+        try {
+          result = JSON.parse(text);
+        } catch (err) {
+          mostrarError("Respuesta inválida del servidor");
+          return;
+        }
+
+        if (result.status === "ok") {
+          localStorage.setItem("usuario_id", result.id); // Puedes usar usuario si lo prefieres
+          window.location.href = "index.html";
+        } else {
+          mostrarError("Usuario o contraseña incorrectos");
+        }
+      } catch (error) {
+        console.error("Error al conectar:", error);
+        mostrarError("No se pudo conectar al servidor");
+      }
+    }
+  </script>
 </body>
 </html>
+
 
