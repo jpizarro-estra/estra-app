@@ -67,7 +67,7 @@
   </div>
 
   <script>
-    const URL_API = "https://estra-proxy.jpizarro-estra.workers.dev/";
+    const URL_API = "https://estra-proxy.joelpizarro.workers.dev"; // ← usa aquí tu URL real del Worker
 
     function mostrarError(msg) {
       const errorMsg = document.getElementById("error-msg");
@@ -87,7 +87,7 @@
       }
 
       try {
-        const response = await fetch(`${URL_API}?op=login&usuario=${usuario}&clave=${clave}`);
+        const response = await fetch(`${URL_API}?op=login&usuario=${encodeURIComponent(usuario)}&clave=${encodeURIComponent(clave)}`);
         const text = await response.text();
         console.log("Respuesta cruda:", text);
 
@@ -100,7 +100,7 @@
         }
 
         if (result.status === "ok") {
-          localStorage.setItem("usuario_id", result.id); // Puedes usar usuario si lo prefieres
+          localStorage.setItem("usuario_id", result.id);
           window.location.href = "index.html";
         } else {
           mostrarError("Usuario o contraseña incorrectos");
